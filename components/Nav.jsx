@@ -1,20 +1,26 @@
 "use client";
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState,useEffect } from 'react';
-import {signIn,signOut,useSession,getProviders } from 'next-auth/react'  
-import Provider from './Provider';
+
+import Link from "next/link";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { signIn, signOut, useSession, getProviders } from "next-auth/react";
+// Remove: import { set } from "mongoose"; // Not used
+// If you need your own Provider component, rename it to something else, like AppProvider:
+import Provider from "./Provider"; // If this is your custom component
+
 const Nav = () => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
+
   const [providers, setProviders] = useState(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
-  useEffect(() => {  
-    const setProviders = async () => {
+
+  useEffect(() => {
+    const setUpProviders = async () => {
       const response = await getProviders();
       setProviders(response);
-    }
-  },[]);
-  
+    };
+    setUpProviders();
+  }, []);
 
   return (
     <nav className="flex-between w-full mb-16 pt-3">
@@ -28,8 +34,10 @@ const Nav = () => {
         />
         <p className="logo_text">Promptopia</p>
       </Link>
-      <div className="sm:flex hidden ">
-        {isUserLoggedIn ? (
+
+      {/* Desktop Navigation */}
+      <div className="sm:flex hidden">
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black_btn">
               Create Post
@@ -50,21 +58,23 @@ const Nav = () => {
         ) : (
           <>
             {providers &&
-              Object.values(providers).map((Provider) => (
+              Object.values(providers).map((provider) => (
                 <button
                   type="button"
-                  key={Provider.name}
-                  onClick={() => signIn(Provider.id)}
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
                   className="black_btn"
                 >
-                  sign In
+                  Sign In
                 </button>
               ))}
           </>
         )}
       </div>
+
+      {/* Mobile Navigation */}
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
               src="/assets/images/logo.svg"
@@ -91,13 +101,14 @@ const Nav = () => {
                   Create Prompt
                 </Link>
                 <button
-                type='button'
-                onClick={()=> {setToggleDropdown(fasle)
-                signOut();
-                }}
-                className='mt-5 w-full black_btn'
+                  type="button"
+                  onClick={() => {
+                    setToggleDropdown(false);
+                    signOut();
+                  }}
+                  className="mt-5 w-full black_btn"
                 >
-                  sign out
+                  Sign Out
                 </button>
               </div>
             )}
@@ -105,14 +116,14 @@ const Nav = () => {
         ) : (
           <>
             {providers &&
-              Object.values(providers).map((Provider) => (
+              Object.values(providers).map((provider) => (
                 <button
                   type="button"
-                  key={Provider.name}
-                  onClick={() => signIn(Provider.id)}
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
                   className="black_btn"
                 >
-                  sign In
+                  Sign In
                 </button>
               ))}
           </>
@@ -120,6 +131,6 @@ const Nav = () => {
       </div>
     </nav>
   );
-}
+};
 
-export default Nav
+export default Nav;
