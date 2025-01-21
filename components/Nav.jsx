@@ -74,19 +74,33 @@ const Nav = () => {
               alt="User profile"
               onClick={() => setToggleDropdown((prev) => !prev)}
             />
-            {
-              toggleDropdown && (
-                <div className='dropdown'>
-                  <Link
+            {toggleDropdown && (
+              <div className="dropdown">
+                <Link
                   href="/profile"
-                  className='dropdown_link'
-                  onClick={()=>setToggleDropdown(false)}
-                  >
-                    My Profile
-                  </Link>
-                </div>
-              )
-            }
+                  className="dropdown_link"
+                  onClick={() => setToggleDropdown(false)}
+                >
+                  My Profile
+                </Link>
+                <Link
+                  href="/create-prompt"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropdown(false)}
+                >
+                  Create Prompt
+                </Link>
+                <button
+                type='button'
+                onClick={()=> {setToggleDropdown(fasle)
+                signOut();
+                }}
+                className='mt-5 w-full black_btn'
+                >
+                  sign out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <>
